@@ -8,7 +8,7 @@ curl -X POST http://localhost:8000/seed
 
 # Или через docker exec
 docker compose exec backend python -m app.utils.seed_data
-
+```
 
 # Search Comparison: BM25 vs Vector Search
 
