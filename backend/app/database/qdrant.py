@@ -9,9 +9,13 @@ logger = logging.getLogger(__name__)
 
 def init_qdrant():
     """Инициализация Qdrant: создание коллекции."""
+    # Поддержка API ключа (если задан)
+    api_key = settings.QDRANT_API_KEY if settings.QDRANT_API_KEY else None
+    
     client = QdrantClient(
         host=settings.QDRANT_HOST,
-        port=settings.QDRANT_PORT
+        port=settings.QDRANT_PORT,
+        api_key=api_key
     )
     
     # Получаем размерность эмбеддинга через Ollama Client

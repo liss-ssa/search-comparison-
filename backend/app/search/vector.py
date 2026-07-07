@@ -7,8 +7,6 @@ from typing import List, Dict, Any
 from app.config import settings
 import logging
 import time
-import ollama
-from ollama import Client
 
 logger = logging.getLogger(__name__)
 
@@ -43,10 +41,13 @@ def search_vector(query: str, limit: int = 10) -> List[Dict[str, Any]]:
         # Получаем эмбеддинг запроса
         query_embedding = get_embedding(query)
         
-        # Инициализируем клиент Qdrant
+        # Инициализируем клиент Qdrant с поддержкой API ключа
+        api_key = settings.QDRANT_API_KEY if settings.QDRANT_API_KEY else None
+        
         client = QdrantClient(
             host=settings.QDRANT_HOST,
-            port=settings.QDRANT_PORT
+            port=settings.QDRANT_PORT,
+            api_key=api_key
         )
         
         # Выполняем поиск

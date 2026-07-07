@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     QDRANT_HOST: str = Field(default="qdrant", alias="QDRANT_HOST")
     QDRANT_PORT: int = Field(default=6333, alias="QDRANT_PORT")
     QDRANT_COLLECTION: str = Field(default="products", alias="QDRANT_COLLECTION")
+    QDRANT_API_KEY: str = Field(default="", alias="QDRANT_API_KEY")
     
     # Ollama
     OLLAMA_URL: str = Field(default="http://ollama:11434", alias="OLLAMA_URL")

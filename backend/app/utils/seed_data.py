@@ -270,9 +270,13 @@ def seed_qdrant(products: List[Dict[str, Any]]) -> None:
     from qdrant_client.models import PointStruct
     from app.llm.ollama_client import _get_client, _retry_with_backoff
     
+    # Поддержка API ключа
+    api_key = settings.QDRANT_API_KEY if settings.QDRANT_API_KEY else None
+    
     client = QdrantClient(
         host=settings.QDRANT_HOST,
-        port=settings.QDRANT_PORT
+        port=settings.QDRANT_PORT,
+        api_key=api_key
     )
     
     ollama_client = _get_client()
