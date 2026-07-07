@@ -6,13 +6,13 @@ WORKDIR /app
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 # Копируем зависимости
-COPY requirements.txt .
+COPY backend/requirements.txt .
 
 # Устанавливаем зависимости
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем код приложения
-COPY . .
+COPY backend/ .
 
 # Меняем владельца на appuser
 RUN chown -R appuser:appuser /app
