@@ -268,35 +268,31 @@ def seed_qdrant(products: List[Dict[str, Any]]) -> None:
     """Загружает товары в Qdrant с эмбеддингами."""
     from qdrant_client import QdrantClient
     from qdrant_client.models import PointStruct
-    from app.llm.ollama_client import _get_client, _retry_with_backoff
+    from app.llm.ollama_client import get_embedding
     
-    # Поддержка API ключа
+    # Поддержка API ключа и HTTPS
     api_key = settings.QDRANT_API_KEY if settings.QDRANT_API_KEY else None
+    use_https = settings.QDRANT_HOST.endswith('.cloud.qdrant.io') or \
+                settings.QDRANT_HOST.startswith('https://')
     
     client = QdrantClient(
         host=settings.QDRANT_HOST,
         port=settings.QDRANT_PORT,
-        api_key=api_key
+        api_key=api_key,
+        https=use_https
     )
     
-    ollama_client = _get_client()
-    
-    # Генерируем эмбеддинги через Ollama
-    print("Генерация эмбеддингов через Ollama...")
+    # Генерируем эмбеддинги через dockhost AI Inference
+    print("Генерация эмбеддингов через dockhost AI Inference...")
     embeddings = []
     
     for i, product in enumerate(products):
         # Формируем текст для эмбеддинга
         text = f"{product['название']}. {product['описание']}"
         
-        # Получаем эмбеддинг с retry
+        # Получаем эмбеддинг
         try:
-            response = _retry_with_backoff(
-                ollama_client.embeddings,
-                model=settings.EMBED_MODEL,
-                prompt=text
-            )
-            embedding = response["embedding"]
+            embedding = get_embedding(text)
             embeddings.append(embedding)
         except Exception as e:
             logger.error(f"Ошибка генерации эмбеддинга для товара {product['id']}: {e}")

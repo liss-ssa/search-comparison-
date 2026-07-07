@@ -6,22 +6,23 @@ class Settings(BaseSettings):
     """Настройки приложения."""
     
     # PostgreSQL
-    POSTGRES_HOST: str = Field(default="postgres", alias="POSTGRES_HOST")
-    POSTGRES_PORT: int = Field(default=5432, alias="POSTGRES_PORT")
-    POSTGRES_DB: str = Field(default="search_db", alias="POSTGRES_DB")
-    POSTGRES_USER: str = Field(default="postgres", alias="POSTGRES_USER")
-    POSTGRES_PASSWORD: str = Field(default="postgres", alias="POSTGRES_PASSWORD")
+    POSTGRES_HOST: str = Field(default="postgres")
+    POSTGRES_PORT: int = Field(default=5432)
+    POSTGRES_DB: str = Field(default="search_db")
+    POSTGRES_USER: str = Field(default="postgres")
+    POSTGRES_PASSWORD: str = Field(default="postgres")
     
     # Qdrant
-    QDRANT_HOST: str = Field(default="qdrant", alias="QDRANT_HOST")
-    QDRANT_PORT: int = Field(default=6333, alias="QDRANT_PORT")
-    QDRANT_COLLECTION: str = Field(default="products", alias="QDRANT_COLLECTION")
-    QDRANT_API_KEY: str = Field(default="", alias="QDRANT_API_KEY")
+    QDRANT_HOST: str = Field(default="qdrant")
+    QDRANT_PORT: int = Field(default=6333)
+    QDRANT_COLLECTION: str = Field(default="products")
+    QDRANT_API_KEY: str = Field(default="")
     
-    # Ollama
-    OLLAMA_URL: str = Field(default="http://ollama:11434", alias="OLLAMA_URL")
-    EMBED_MODEL: str = Field(default="nomic-embed-text", alias="EMBED_MODEL")
-    LLM_MODEL: str = Field(default="llama3.1:latest", alias="LLM_MODEL")
+    # OpenAI (dockhost AI Inference)
+    OPENAI_API_KEY: str = Field(default="")
+    OPENAI_BASE_URL: str = Field(default="https://inference.dockhost.io/v1")
+    EMBED_MODEL: str = Field(default="intfloat/multilingual-e5-large")
+    LLM_MODEL: str = Field(default="deepseek/deepseek-v3.2")
     
     class Config:
         env_file = ".env"

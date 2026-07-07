@@ -1,27 +1,15 @@
 """
 Векторный поиск через Qdrant.
-Использует эмбеддинги от Ollama и cosine similarity.
+Использует эмбеддинги от dockhost AI Inference и cosine similarity.
 """
 from qdrant_client import QdrantClient
 from typing import List, Dict, Any
 from app.config import settings
+from app.llm.ollama_client import get_embedding
 import logging
 import time
 
 logger = logging.getLogger(__name__)
-
-
-def get_embedding(text: str) -> List[float]:
-    """Получает эмбеддинг текста через Ollama с retry-логикой."""
-    from app.llm.ollama_client import _get_client, _retry_with_backoff
-    
-    client = _get_client()
-    response = _retry_with_backoff(
-        client.embeddings,
-        model=settings.EMBED_MODEL,
-        prompt=text
-    )
-    return response["embedding"]
 
 
 def search_vector(query: str, limit: int = 10) -> List[Dict[str, Any]]:
@@ -41,13 +29,16 @@ def search_vector(query: str, limit: int = 10) -> List[Dict[str, Any]]:
         # Получаем эмбеддинг запроса
         query_embedding = get_embedding(query)
         
-        # Инициализируем клиент Qdrant с поддержкой API ключа
+        # Поддержка API ключа и HTTPS
         api_key = settings.QDRANT_API_KEY if settings.QDRANT_API_KEY else None
+        use_https = settings.QDRANT_HOST.endswith('.cloud.qdrant.io') or \
+                    settings.QDRANT_HOST.startswith('https://')
         
         client = QdrantClient(
             host=settings.QDRANT_HOST,
             port=settings.QDRANT_PORT,
-            api_key=api_key
+            api_key=api_key,
+            https=use_https
         )
         
         # Выполняем поиск
