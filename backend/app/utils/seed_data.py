@@ -12,6 +12,9 @@ import psycopg2
 from psycopg2.extras import Json
 from ollama import Client
 
+import logging
+logger = logging.getLogger(__name__)
+
 from ..config import settings
 
 
@@ -262,14 +265,18 @@ def seed_postgres(products: List[Dict[str, Any]]) -> None:
 
 
 def seed_qdrant(products: List[Dict[str, Any]]) -> None:
-    """Загружает товары в Qdrant с эмбеддингами"""
+    """Загружает товары в Qdrant с эмбеддингами."""
+    from qdrant_client import QdrantClient
+    from qdrant_client.models import PointStruct
+    from app.llm.ollama_client import _get_client, _retry_with_backoff
+    
     client = QdrantClient(
         host=settings.QDRANT_HOST,
         port=settings.QDRANT_PORT
     )
     
-    ollama_client = Client(host=settings.OLLAMA_URL)
-
+    ollama_client = _get_client()
+    
     # Генерируем эмбеддинги через Ollama
     print("Генерация эмбеддингов через Ollama...")
     embeddings = []
@@ -278,10 +285,19 @@ def seed_qdrant(products: List[Dict[str, Any]]) -> None:
         # Формируем текст для эмбеддинга
         text = f"{product['название']}. {product['описание']}"
         
-        # Получаем эмбеддинг
-        response = ollama_client.embeddings(model=settings.EMBED_MODEL, prompt=text)
-        embedding = response["embedding"]
-        embeddings.append(embedding)
+        # Получаем эмбеддинг с retry
+        try:
+            response = _retry_with_backoff(
+                ollama_client.embeddings,
+                model=settings.EMBED_MODEL,
+                prompt=text
+            )
+            embedding = response["embedding"]
+            embeddings.append(embedding)
+        except Exception as e:
+            logger.error(f"Ошибка генерации эмбеддинга для товара {product['id']}: {e}")
+            # Используем нулевой вектор как fallback
+            embeddings.append([0.0] * 1024)
         
         if (i + 1) % 10 == 0:
             print(f"  Обработано {i + 1}/{len(products)} товаров")

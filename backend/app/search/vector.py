@@ -14,9 +14,12 @@ logger = logging.getLogger(__name__)
 
 
 def get_embedding(text: str) -> List[float]:
-    """Получает эмбеддинг текста через Ollama."""
-    client = Client(host=settings.OLLAMA_URL)
-    response = client.embeddings(
+    """Получает эмбеддинг текста через Ollama с retry-логикой."""
+    from app.llm.ollama_client import _get_client, _retry_with_backoff
+    
+    client = _get_client()
+    response = _retry_with_backoff(
+        client.embeddings,
         model=settings.EMBED_MODEL,
         prompt=text
     )

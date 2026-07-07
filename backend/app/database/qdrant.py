@@ -16,8 +16,10 @@ def init_qdrant():
     
     # Получаем размерность эмбеддинга через Ollama Client
     try:
-        ollama_client = Client(host=settings.OLLAMA_URL)
-        test_response = ollama_client.embeddings(
+        from app.llm.ollama_client import _get_client, _retry_with_backoff
+        ollama_client = _get_client()
+        test_response = _retry_with_backoff(
+            ollama_client.embeddings,
             model=settings.EMBED_MODEL,
             prompt="test"
         )
@@ -25,8 +27,8 @@ def init_qdrant():
         logger.info(f"Размерность эмбеддинга модели {settings.EMBED_MODEL}: {vector_size}")
     except Exception as e:
         logger.warning(f"Не удалось получить размерность эмбеддинга: {e}")
-        logger.info("Используем размерность по умолчанию: 768")
-        vector_size = 768
+        logger.info("Используем размерность по умолчанию: 1024 (для bge-m3)")
+        vector_size = 1024
     
     # Создаем коллекцию
     collections = client.get_collections().collections
