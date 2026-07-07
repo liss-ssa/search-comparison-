@@ -15,7 +15,7 @@ def init_qdrant():
     client = QdrantClient(
         host=settings.QDRANT_HOST,
         port=settings.QDRANT_PORT,
-        api_key=api_key
+        api_key=settings.QDRANT_API_KEY,
     )
     
     # Получаем размерность эмбеддинга через Ollama Client

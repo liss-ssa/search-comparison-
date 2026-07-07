@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
+import os
 
 from app.config import settings
 from app.database.postgres import init_postgres
@@ -27,11 +28,24 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Инициализация при старте приложения."""
+    logger.info("=" * 60)
+    logger.info("🔍 ВСЕ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ:")
+    for key, value in sorted(os.environ.items()):
+        # Скрываем значения паролей для безопасности
+        if any(s in key.lower() for s in ['password', 'key', 'secret', 'token']):
+            logger.info(f"  {key} = {'*' * len(value)}")
+        else:
+            logger.info(f"  {key} = {value}")
+    logger.info("=" * 60)
+    
+    # Инициализация БД
     logger.info("Инициализация баз данных...")
     init_postgres()
     init_qdrant()
     logger.info("Базы данных инициализированы")
+    
     yield
+    
     logger.info("Завершение работы")
 
 
