@@ -1,15 +1,3 @@
-## Загрузка данных
-
-После запуска контейнеров загрузите каталог товаров:
-
-```bash
-# Через API endpoint
-curl -X POST http://localhost:8000/seed
-
-# Или через docker exec
-docker compose exec backend python -m app.utils.seed_data
-
-
 # Search Comparison: BM25 vs Vector Search
 
 Сравнения эффективности лексического (BM25) и семантического (Vector) поиска в RAG-системе для каталога косметики и бытовой химии.
