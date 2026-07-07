@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     # OpenAI (dockhost AI Inference)
     OPENAI_API_KEY: str = Field(default="")
     OPENAI_BASE_URL: str = Field(default="https://inference.dockhost.io/v1")
-    EMBED_MODEL: str = Field(default="intfloat/multilingual-e5-large")
+    EMBED_MODEL: str = Field(default="qwen/qwen3-embedding-8b")
     LLM_MODEL: str = Field(default="deepseek/deepseek-v3.2")
     
     class Config:
