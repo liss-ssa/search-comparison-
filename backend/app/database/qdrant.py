@@ -12,8 +12,6 @@ logger = logging.getLogger(__name__)
 
 def init_qdrant():
     """Инициализация Qdrant: создание коллекции."""
-    # Поддержка API ключа и HTTPS
-    api_key = settings.QDRANT_API_KEY if settings.QDRANT_API_KEY else None
     
     # Определяем, нужен ли HTTPS
     use_https = settings.QDRANT_HOST.endswith('.cloud.qdrant.io') or \
@@ -22,8 +20,8 @@ def init_qdrant():
     client = QdrantClient(
         host=settings.QDRANT_HOST,
         port=settings.QDRANT_PORT,
-        api_key=api_key,
-        https=use_https
+        api_key=settings.QDRANT_API_KEY or None,
+        https=use_https,
     )
     
     # Получаем размерность эмбеддинга
